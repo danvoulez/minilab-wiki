@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tabela periódica das peças de processo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#EDF0EE; --ink:#17242A; --grid:#C3CCC7; --muted:#5C6B66;
+    --f-nasc:#3E7C8F; --f-ativ:#6E5A93; --f-exec:#8F6A2F;
+    --f-efei:#A34E3B; --f-fech:#3F7D5A; --f-cons:#7A4A6B;
+    --vac:#A87A1F; --hazard:#8C3B2E;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"IBM Plex Sans",sans-serif;font-size:14px;line-height:1.45}
+  .wrap{max-width:1160px;margin:0 auto;padding:36px 20px 60px}
+
+  .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--muted)}
+  h1{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:clamp(26px,4vw,40px);
+    margin:.25em 0 .2em;letter-spacing:-.01em}
+  .thesis{max-width:62ch;color:var(--muted);margin:0 0 26px}
+  .thesis b{color:var(--ink)}
+
+  /* legenda de moléculas */
+  .legend{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 22px}
+  .mol{font-family:"IBM Plex Mono",monospace;font-size:12px;border:1px solid var(--grid);
+    background:#fff;border-radius:3px;padding:6px 10px;cursor:pointer;color:var(--ink);
+    transition:border-color .15s, background .15s}
+  .mol .la{color:var(--muted);margin-left:6px}
+  .mol.proposto{border-style:dashed;color:var(--muted)}
+  .mol.active{border-color:var(--ink);background:var(--ink);color:#fff}
+  .mol.active .la{color:#cfd8d3}
+  .legend-note{font-size:12px;color:var(--muted);width:100%;margin-top:2px}
+
+  /* a tabela */
+  .table-scroll{overflow-x:auto;border:1px solid var(--grid);background:#fff}
+  table{border-collapse:collapse;width:100%;min-width:980px}
+  th,td{border:1px solid var(--grid);vertical-align:top;padding:0}
+  thead th{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:13px;
+    text-transform:lowercase;letter-spacing:.02em;padding:10px 8px;text-align:left}
+  thead th span{display:block;font-family:"IBM Plex Mono",monospace;font-weight:400;
+    font-size:10px;color:var(--muted);text-transform:none;letter-spacing:0;margin-top:2px}
+  th.rail, td.rail{width:64px;background:#F5F7F5;text-align:center;
+    font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--muted);
+    vertical-align:middle;padding:6px}
+  td.cell{padding:7px;min-height:56px}
+  thead th.c-nasc{border-top:3px solid var(--f-nasc)}
+  thead th.c-ativ{border-top:3px solid var(--f-ativ)}
+  thead th.c-exec{border-top:3px solid var(--f-exec)}
+  thead th.c-efei{border-top:3px solid var(--f-efei)}
+  thead th.c-fech{border-top:3px solid var(--f-fech)}
+  thead th.c-cons{border-top:3px solid var(--f-cons)}
+
+  /* tiles */
+  .tile{border:1px solid var(--grid);border-left-width:4px;border-radius:2px;
+    padding:6px 8px 7px;margin:0 0 7px;background:#fff;
+    transition:opacity .15s, box-shadow .15s;cursor:default}
+  .tile:last-child{margin-bottom:0}
+  .tile .sym{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:17px;
+    line-height:1;display:inline-block}
+  .tile .span{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--muted);
+    float:right;margin-top:3px}
+  .tile .nm{display:block;font-size:11.5px;margin-top:3px}
+  .tile .use{display:block;font-family:"IBM Plex Mono",monospace;font-size:10px;
+    color:var(--muted);margin-top:2px}
+  .tile.nasc{border-left-color:var(--f-nasc)} .tile.ativ{border-left-color:var(--f-ativ)}
+  .tile.exec{border-left-color:var(--f-exec)} .tile.efei{border-left-color:var(--f-efei)}
+  .tile.fech{border-left-color:var(--f-fech)} .tile.cons{border-left-color:var(--f-cons)}
+  .tile.proposto{border-style:dashed;background:transparent}
+  .tile.proposto .sym{color:var(--muted)}
+
+  /* vacância — o elemento previsto (assinatura da página) */
+  .vac{border:1.5px dashed var(--vac);border-radius:2px;padding:6px 8px 7px;margin:0 0 7px;
+    color:var(--vac);background:transparent;transition:opacity .15s}
+  .vac .sym{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:15px;font-style:italic}
+  .vac .nm{display:block;font-size:11px;margin-top:3px;color:var(--ink)}
+  .vac .tag{font-family:"IBM Plex Mono",monospace;font-size:9.5px;text-transform:uppercase;
+    letter-spacing:.08em;float:right;margin-top:2px}
+
+  /* zona L4/L5 */
+  tr.hazard td.cell{background:repeating-linear-gradient(-45deg,
+    #F3EEEC 0 8px, #EDE4E1 8px 16px)}
+  tr.hazard td.rail{color:var(--hazard)}
+  .hazard-label{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--hazard);
+    padding:10px 12px;display:block}
+
+  /* highlight por molécula */
+  body.filtering .tile{opacity:.18}
+  body.filtering .vac{opacity:.18}
+  body.filtering .tile.hit{opacity:1;box-shadow:0 0 0 1.5px var(--ink)}
+
+  /* rodapé */
+  .foot{margin-top:22px;display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  .law{border-left:3px solid var(--grid);padding:2px 0 2px 12px;font-size:12.5px;color:var(--muted)}
+  .law b{color:var(--ink);font-family:"Space Grotesk",sans-serif}
+  .stamp{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);margin-top:26px}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">projeção · não-autoritativa · derivada de 7 tipos registrados + 1 proposto</p>
+  <h1>Tabela periódica das peças de processo</h1>
+  <p class="thesis">Colunas são <b>fase do ciclo de vida</b>; linhas são o <b>eixo L do ADR-0002</b> — descer é rito mais pesado.
+  Cada peça senta no menor L em que aparece, com o span marcado. <b>Casa vazia é informação</b>: os elementos
+  tracejados em âmbar são previsões, à la Mendeleev. Clique numa molécula para ver do que ela é feita.</p>
+
+  <div class="legend" id="legend">
+    <button class="mol" data-m="pulse">expedition.pulse.v0<span class="la">L1·A4</span></button>
+    <button class="mol" data-m="manager">manager.pulse.v1<span class="la">L1·A4</span></button>
+    <button class="mol" data-m="corresp">correspondence.daily.v1<span class="la">L3·A4</span></button>
+    <button class="mol" data-m="control">control_ui_session<span class="la">L2·A1</span></button>
+    <button class="mol" data-m="fleet">fleet_hygiene<span class="la">L2·A2</span></button>
+    <button class="mol" data-m="build">generic_build.v1<span class="la">L2·A1</span></button>
+    <button class="mol" data-m="proposal">process_type.proposal.v1<span class="la">L1·A2</span></button>
+    <button class="mol proposto" data-m="travel">travel.research.v1<span class="la">proposto</span></button>
+    <span class="legend-note">tiles tracejados = peça que só existe em tipo proposto, ainda sem ato no ledger</span>
+  </div>
+
+  <div class="table-scroll">
+  <table>
+    <thead><tr>
+      <th class="rail">L</th>
+      <th class="c-nasc">nascimento<span>wakes_on</span></th>
+      <th class="c-ativ">ativação<span>roles · required_fields</span></th>
+      <th class="c-exec">execução<span>allowed_steps · needs_human</span></th>
+      <th class="c-efei">efeito<span>external_effect_policy</span></th>
+      <th class="c-fech">fechamento<span>closing_evidence</span></th>
+      <th class="c-cons">consequência<span>if_ok · if_doubt · if_not</span></th>
+    </tr></thead>
+    <tbody>
+      <tr><td class="rail">L0</td>
+        <td class="cell"></td><td class="cell"></td><td class="cell"></td>
+        <td class="cell"></td><td class="cell"></td><td class="cell"></td></tr>
+
+      <tr><td class="rail">L1</td>
+        <td class="cell">
+          <div class="tile nasc" data-mols="pulse manager corresp" title="expedition.pulse · manager.pulse · correspondence.daily">
+            <span class="span">L1–L3</span><span class="sym">Sc</span>
+            <span class="nm">schedule.cron — acorda por relógio</span><span class="use">×3 tipos</span></div>
+          <div class="tile nasc" data-mols="control build travel" title="control_ui_session · generic_build · travel.research (proposto)">
+            <span class="span">L1–L2</span><span class="sym">Hr</span>
+            <span class="nm">human.request — acorda por pedido</span><span class="use">×3 tipos</span></div>
+          <div class="tile nasc" data-mols="proposal fleet travel" title="process_type.proposal · fleet_hygiene · travel.research (proposto)">
+            <span class="span">L1–L2</span><span class="sym">Dc</span>
+            <span class="nm">derived.condition — untyped, stale…</span><span class="use">×3 tipos</span></div>
+          <div class="vac"><span class="tag">previsto</span><span class="sym">eka-inbound</span>
+            <span class="nm">acordar por webhook/email chegando — o external_inbound.v1 dos anexos</span></div>
+        </td>
+        <td class="cell">
+          <div class="tile ativ" data-mols="pulse manager corresp proposal" title="pulsos (observador) · correspondence (carteiro) · proposal">
+            <span class="span">L1–L3</span><span class="sym">So</span>
+            <span class="nm">cadeira solo — observador / carteiro</span><span class="use">×4 tipos</span></div>
+          <div class="tile ativ proposto" data-mols="travel" title="só em travel.research (proposto): requester/researcher/reviewer/publisher">
+            <span class="span">L1</span><span class="sym">Ma</span>
+            <span class="nm">multi-ator — 4 cadeiras</span><span class="use">só proposto</span></div>
+        </td>
+        <td class="cell">
+          <div class="tile exec" data-mols="pulse manager corresp" title="os A4: nunca chamam humano dentro da política">
+            <span class="span">L1–L3</span><span class="sym">Hn</span>
+            <span class="nm">humano: nunca (dentro da política)</span><span class="use">×3 tipos</span></div>
+          <div class="tile exec" data-mols="proposal travel" title="lei de classificação do corte 3 + travel.research">
+            <span class="span">L1</span><span class="sym">Hc</span>
+            <span class="nm">humano: em confiança baixa</span><span class="use">×2 tipos</span></div>
+          <div class="tile exec proposto" data-mols="travel" title="travel.research: booking/payment/contato externo">
+            <span class="span">L1</span><span class="sym">He</span>
+            <span class="nm">humano: em efeito externo</span><span class="use">só proposto</span></div>
+        </td>
+        <td class="cell">
+          <div class="tile efei" data-mols="pulse manager proposal fleet" title="pulsos · proposal · fleet_hygiene (sugere, não executa)">
+            <span class="span">L1–L2</span><span class="sym">En</span>
+            <span class="nm">efeito: nenhum — só observa e escreve</span><span class="use">×4 tipos</span></div>
+          <div class="tile efei proposto" data-mols="travel" title="travel.research: pesquisa e rascunho; nada sai sem airlock">
+            <span class="span">L1</span><span class="sym">Ea</span>
+            <span class="nm">efeito: externo sob airlock</span><span class="use">só proposto</span></div>
+        </td>
+        <td class="cell">
+          <div class="tile fech" data-mols="pulse manager corresp" title="cartas dos pulsos → attention objects (corte 4c)">
+            <span class="span">L1–L3</span><span class="sym">Pr</span>
+            <span class="nm">prova de recibo / carta</span><span class="use">×3 tipos</span></div>
+          <div class="tile fech" data-mols="proposal travel" title="proposal: registered.process_type · travel: drive_report_url + verdict">
+            <span class="span">L1</span><span class="sym">Pa</span>
+            <span class="nm">prova de artefato</span><span class="use">×2 tipos</span></div>
+        </td>
+        <td class="cell">
+          <div class="tile cons" data-mols="pulse manager" title="nasceu no corte 4c: source_hash, missing_fields, suggested_next_action">
+            <span class="span">L1</span><span class="sym">Da</span>
+            <span class="nm">if_doubt → attention object</span><span class="use">×2 tipos</span></div>
+          <div class="vac"><span class="tag">vazio</span><span class="sym">eka-encadeamento</span>
+            <span class="nm">if_ok que dispara o próximo processo — ninguém declara ainda</span></div>
+        </td>
+      </tr>
+
+      <tr><td class="rail">L2</td>
+        <td class="cell"></td>
+        <td class="cell">
+          <div class="tile ativ" data-mols="control fleet build" title="os 3 templates herdados">
+            <span class="span">L2</span><span class="sym">Rq</span>
+            <span class="nm">dupla requester + operator</span><span class="use">×3 tipos</span></div>
+          <div class="vac"><span class="tag">previsto</span><span class="sym">eka-rendezvous</span>
+            <span class="nm">seção multi-ator com ato: convocante / convocados / apurador</span></div>
+        </td>
+        <td class="cell">
+          <div class="tile exec" data-mols="control build fleet" title="os A1/A2: humano no loop sempre">
+            <span class="span">L2</span><span class="sym">Hs</span>
+            <span class="nm">humano: sempre</span><span class="use">×3 tipos</span></div>
+        </td>
+        <td class="cell">
+          <div class="tile efei" data-mols="control build" title="deploy de UI, build — ação local delimitada">
+            <span class="span">L2</span><span class="sym">El</span>
+            <span class="nm">efeito: local delimitado</span><span class="use">×2 tipos</span></div>
+        </td>
+        <td class="cell">
+          <div class="tile fech" data-mols="build" title="o oxigênio da casa: fechou #16, #17, #20 e #22">
+            <span class="span">L2</span><span class="sym">Pc</span>
+            <span class="nm">prova de comando (proof_command)</span><span class="use">×1 tipo · 4 expedições</span></div>
+        </td>
+        <td class="cell">
+          <div class="vac"><span class="tag">previsto</span><span class="sym">eka-revelia</span>
+            <span class="nm">if_not com consequência declarada de não comparecer — pede o rendezvous</span></div>
+        </td>
+      </tr>
+
+      <tr><td class="rail">L3</td>
+        <td class="cell"></td><td class="cell"></td><td class="cell"></td>
+        <td class="cell">
+          <div class="tile efei" data-mols="corresp" title="correspondence.daily: email sai da máquina, digest único, compensável">
+            <span class="span">L3</span><span class="sym">Ec</span>
+            <span class="nm">efeito: externo compensável</span><span class="use">×1 tipo</span></div>
+        </td>
+        <td class="cell"></td><td class="cell"></td>
+      </tr>
+
+      <tr class="hazard"><td class="rail">L4</td>
+        <td class="cell" colspan="6"><span class="hazard-label">zona sem precedente — nenhuma peça entra aqui por emergência de uso; L4/L5 exige ato explícito (ADR-0002: automação nunca sobe por precedente sozinho)</span></td></tr>
+      <tr class="hazard"><td class="rail">L5</td>
+        <td class="cell" colspan="6"></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="foot">
+    <p class="law"><b>Valência.</b> Peça de efeito externo pede airlock; peça de fechamento pede evidência; gatilho por tempo pede prazo. Molécula com ligação aberta não ativa — <i>no closure, no automation</i>, legível na página.</p>
+    <p class="law"><b>Átomo comum.</b> Todo fechamento cita hash. É o que faz cada tile daqui ser verificável contra o ledger, e não opinião de quem desenhou a página.</p>
+    <p class="law"><b>Loss accounting.</b> Esta é a versão de papel: decomposição por leitura de comportamento, não das specs no ledger. Os 3 templates v0 não declaram peças com estes nomes — a projeção real usa mapeamento tolerante e confessa cada alias usado.</p>
+  </div>
+
+  <p class="stamp">gramática: process-table.grammar.v1 · hash pendente de digestão · descende de lab.milestones.v0 (96058e02…) · 4 jul 2026</p>
+</div>
+
+<script>
+  const legend = document.getElementById('legend');
+  let active = null;
+  legend.addEventListener('click', (e) => {
+    const btn = e.target.closest('.mol');
+    if (!btn) return;
+    const m = btn.dataset.m;
+    document.querySelectorAll('.mol').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tile').forEach(t => t.classList.remove('hit'));
+    if (active === m) { active = null; document.body.classList.remove('filtering'); return; }
+    active = m;
+    btn.classList.add('active');
+    document.body.classList.add('filtering');
+    document.querySelectorAll('.tile').forEach(t => {
+      if ((t.dataset.mols || '').split(' ').includes(m)) t.classList.add('hit');
+    });
+  });
+</script>
+</body>
+</html>
