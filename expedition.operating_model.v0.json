@@ -1,0 +1,493 @@
+{
+  "kind": "expedition.operating_model",
+  "id": "expedition.operating_model.v0",
+  "version": "0.1.0",
+  "status": "draft",
+  "canonicalization": "jcs-rfc8785",
+  "ruleset": "expedition.rules.canon.v0",
+  "catalog": "expedition.catalog.v0",
+  "law_boundary": {
+    "this_document": "runtime_and_operations_model",
+    "does_not_replace": [
+      "expedition.rules.canon.v0",
+      "expedition.catalog.v0"
+    ],
+    "markdown_views": "derived_view",
+    "calendar_descriptions": "derived_view",
+    "agent_prompts": "derived_view"
+  },
+  "purpose": "Define how Expeditions are scheduled, awakened, executed, closed, reviewed, and used to reduce Dan's operational burden.",
+  "global_objective": {
+    "id": "global.return_time_to_dan_and_team",
+    "text": "Expeditions exist to reduce Dan's operational burden, advance the team, and create more free time for real conversations, decisions, and human connections.",
+    "operational_test": "A successful Expedition leaves a real object, decision, draft, PR, schedule, register row, receipt, or handoff that reduces manual relay work."
+  },
+  "calendar_semantics": {
+    "id": "calendar.past_present_future",
+    "future": {
+      "meaning": "planned_work",
+      "description": "Future events are scheduled intentions and can be revised before their slot arrives."
+    },
+    "present": {
+      "meaning": "execution",
+      "description": "The event currently due on a chair is the mission to execute."
+    },
+    "past": {
+      "meaning": "knowledge",
+      "description": "Past calendar events are operational memory: what was planned, what became present, how it ended, and what evidence or handoff was left."
+    },
+    "reader_policy": {
+      "dan": "read_only_by_default",
+      "llm_agents": "write_through_mcp_or_scoped_tools",
+      "manual_edits": "exception_or_repair_case"
+    },
+    "calendar_event_policy": {
+      "atomized_events": true,
+      "use_links": true,
+      "use_short_text": true,
+      "use_images_or_attachments_when_helpful": true,
+      "large_state_belongs_elsewhere": [
+        "google_drive",
+        "google_docs",
+        "google_sheets",
+        "github",
+        "receipts"
+      ]
+    }
+  },
+  "chair_model": {
+    "id": "chair.agent_as_calendar",
+    "definition": "A chair is an institutional role represented by a dedicated Expedition calendar. An LLM temporarily occupies the chair when its scheduled event becomes due.",
+    "continuity_lives_in": [
+      "calendar_past",
+      "calendar_present",
+      "calendar_future",
+      "handoffs",
+      "receipts",
+      "drive_bundles",
+      "register_rows"
+    ],
+    "default_chairs": [
+      {
+        "id": "chair.research",
+        "name": "Expedition / Research",
+        "purpose": "Research work that advances the team and leaves useful Drive output."
+      },
+      {
+        "id": "chair.reports",
+        "name": "Expedition / Reports",
+        "purpose": "Daily or weekly summaries, digests, and status reports."
+      },
+      {
+        "id": "chair.eve_work_8gb",
+        "name": "Expedition / Eve WORK 8GB",
+        "purpose": "Local edge duties, operational handoffs, and local execution coordination."
+      },
+      {
+        "id": "chair.airlock",
+        "name": "Expedition / Airlock",
+        "purpose": "External or consequential effects requiring care, receipt, or approval."
+      },
+      {
+        "id": "chair.github_authority",
+        "name": "Expedition / GitHub Authority",
+        "purpose": "PR-based authority for code, canon, schemas, and durable institutional change."
+      },
+      {
+        "id": "chair.infra_morning",
+        "name": "Expedition / Infra Morning",
+        "purpose": "Morning infrastructure pulse, Manhattan status, agent reachability, and Dan attention."
+      }
+    ]
+  },
+  "planning_model": {
+    "id": "planning.present_schedules_future",
+    "meeting_surface": "conversation_with_dan",
+    "normal_output": "future_expedition_events",
+    "default_rule": "This conversation is a planning room. Normal Expeditions are scheduled into the future rather than executed immediately.",
+    "principles": [
+      "today_was_decided_earlier",
+      "do_not_make_dan_the_message_bus",
+      "turn_intent_into_calendar_duties",
+      "execution_happens_when_the_scheduled_future_becomes_present"
+    ],
+    "emergency_exception": {
+      "allowed": true,
+      "description": "Immediate execution may happen for urgent or repair work, but it must be scoped and receipted."
+    }
+  },
+  "wake_model": {
+    "id": "wake.means_execute",
+    "definition": "Wake means execute the Expedition currently due on the occupied chair.",
+    "not_wake": [
+      "notify_only",
+      "think_about_work",
+      "ask_dan_to_carry_prompt",
+      "delegate_to_another_agent_without_reason"
+    ],
+    "waking_actor": {
+      "type": "premium_llm_app_with_scheduling_and_mcp_access",
+      "examples": [
+        "chatgpt_agent",
+        "claude_scheduled_task",
+        "codex_agent",
+        "kimi_agent",
+        "copilot_agent",
+        "other_compatible_scheduled_llm"
+      ]
+    },
+    "wake_sequence": [
+      "agent_scheduler_reaches_due_time",
+      "agent_receives_wake_prompt",
+      "agent_occupies_assigned_chair",
+      "agent_reads_local_expedition_canon",
+      "agent_calls_expedition_mcp_or_fallback_tools",
+      "agent_reads_current_due_event",
+      "agent_identifies_type_skill_destination_and_done_criteria",
+      "agent_executes_the_task",
+      "agent_writes_output_to_declared_destination",
+      "agent_writes_handoff_or_receipt",
+      "agent_closes_defers_once_or_fails_final"
+    ]
+  },
+  "chatgpt_agent_executor": {
+    "id": "executor.chatgpt_agent_first",
+    "role": "first_preferred_executor_for_tests",
+    "reason": "ChatGPT Agents combine reasoning, filesystem, web/search, MCP access, connectors, and a small computer-like environment in one workflow.",
+    "execution_policy": {
+      "agent_is_executor": true,
+      "do_not_call_other_agent_by_default": true,
+      "use_available_tools_to_complete_task": true,
+      "ask_for_approval_for_consequential_actions": true,
+      "write_proof_before_done": true
+    },
+    "good_first_expeditions": [
+      "infra.pulse_to_calendar",
+      "plan.to_calendar",
+      "research.to_drive",
+      "make.document_to_drive",
+      "review.document"
+    ]
+  },
+  "agent_filesystem_canon": {
+    "id": "agent.filesystem_canon_minimal",
+    "purpose": "Prevent confusion by giving the executing agent one local canonical Expedition package.",
+    "root_path": "/expeditions-canon",
+    "files": [
+      {
+        "path": "/expeditions-canon/EXPEDITION_RULES_CANON.json",
+        "role": "rules_law"
+      },
+      {
+        "path": "/expeditions-canon/EXPEDITION_CATALOG.json",
+        "role": "types_skills_destinations"
+      },
+      {
+        "path": "/expeditions-canon/EXPEDITION_OPERATING_MODEL.json",
+        "role": "runtime_model"
+      },
+      {
+        "path": "/expeditions-canon/EXPEDITION_AGENT_BRIEF.md",
+        "role": "derived_boot_view"
+      }
+    ],
+    "source_policy": {
+      "agent_filesystem_canon": "preferred_local_reference",
+      "calendar": "references_canon_but_does_not_duplicate_full_law",
+      "drive_docs": "may_contain_views_but_not_competing_law",
+      "github_pr": "authority_for_durable_canon_changes"
+    }
+  },
+  "mcp_policy": {
+    "id": "mcp.tools_are_hands",
+    "preferred_tool_surface": "expedition_mcp",
+    "principle": "The Expedition MCP exposes high-level verbs; Google, GitHub, Gmail, Sheets, and other APIs are backend surfaces or fallback tools.",
+    "preferred_tools": [
+      "chair.list",
+      "chair.read_now",
+      "expedition.create",
+      "expedition.read",
+      "expedition.find_empty_slot",
+      "drive.create_bundle",
+      "docs.write_handoff",
+      "sheets.append_register_row",
+      "research.google_grounded",
+      "expedition.mark_done",
+      "expedition.reschedule_once",
+      "expedition.bootstrap_demo"
+    ],
+    "future_tools": [
+      "rules.get",
+      "rules.validate_event",
+      "rules.validate_handoff",
+      "rules.render_markdown",
+      "health.ping",
+      "health.config"
+    ],
+    "write_policy": {
+      "mark_done_requires_proof": true,
+      "reschedule_once_only": true,
+      "high_level_tools_preferred_over_raw_api": true
+    }
+  },
+  "fallback_tool_policy": {
+    "id": "tools.mission_over_tool",
+    "principle": "The tool is replaceable. The output, authority, proof, and handoff are not.",
+    "fallback_order": [
+      "expedition_mcp",
+      "native_google_connector_or_google_workspace_tools",
+      "github_mcp_or_github_connector",
+      "gmail_connector",
+      "browser_or_computer_actions",
+      "terminal_or_api_access_when_safe_and_available"
+    ],
+    "allowed": [
+      "try_alternative_tool_if_preferred_mcp_fails",
+      "use_other_mcp_if_it_can_satisfy_same_output",
+      "record_which_tool_was_used",
+      "preserve_done_criteria_and_proof_requirements"
+    ],
+    "forbidden": [
+      "fail_task_only_because_preferred_tool_failed_when_safe_fallback_exists",
+      "bypass_authority_to_make_tooling_easier",
+      "mark_done_without_real_output",
+      "leave_dan_to_manually_finish_the_task"
+    ]
+  },
+  "drive_model": {
+    "id": "drive.inbox_outbox_body",
+    "purpose": "Use Google Drive as the body of Expedition work: input material, output material, bundles, reports, and evidence.",
+    "root": "Expeditions",
+    "folders": [
+      {
+        "name": "Inbox",
+        "purpose": "Unprocessed material that should become an Expedition, decision, document, PR, draft, or organized file."
+      },
+      {
+        "name": "Outbox",
+        "purpose": "Finished or near-finished material ready for Dan, the team, or the outside world."
+      },
+      {
+        "name": "Bundles",
+        "purpose": "Per-Expedition folders containing mission context, evidence, source bundles, handoffs, and receipts."
+      },
+      {
+        "name": "Reports",
+        "purpose": "Daily, weekly, infra, review, and digest documents."
+      },
+      {
+        "name": "Canon Views",
+        "purpose": "Human-readable views generated from the canonical JSON files."
+      }
+    ],
+    "automation_policy": {
+      "inbox_should_be_processed_into_real_next_state": true,
+      "outbox_should_hold_ready_outputs": true,
+      "calendar_should_link_relevant_drive_objects": true
+    }
+  },
+  "github_model": {
+    "id": "github.pr_authority",
+    "purpose": "Use GitHub PRs as the serious authority surface for code, canon, schemas, MCP behavior, and important durable documents.",
+    "ordinary_uses": [
+      "make.code_as_pr",
+      "make.important_document_as_pr",
+      "canon.change_as_pr"
+    ],
+    "authority_rule": "An open PR is a proposal. A merged PR plus commit SHA is durable authority.",
+    "calendar_policy": {
+      "calendar_event_should_link_pr": true,
+      "calendar_done_before_merge_allowed_for_pr_creation": true,
+      "canon_change_authoritative_only_after_merge": true
+    }
+  },
+  "gmail_model": {
+    "id": "gmail.draft_and_send",
+    "purpose": "Use Gmail drafts and sends as communication outputs when communication advances real people or work.",
+    "draft_policy": {
+      "ordinary_output": "gmail_draft",
+      "authority": "calendar_mcp",
+      "dan_reviews_or_sends": true
+    },
+    "send_policy": {
+      "ordinary_output": "gmail_send",
+      "authority": "human_approval",
+      "touches_world": true,
+      "receipt_required": true
+    }
+  },
+  "morning_catch_block": {
+    "id": "morning_catch.block",
+    "purpose": "Run quiet operational work before Dan wakes so he starts the day with organized reality rather than raw uncertainty.",
+    "default_window": {
+      "start": "03:00",
+      "end": "06:30",
+      "timezone": "Europe/Lisbon"
+    },
+    "sequence": [
+      {
+        "time": "03:00",
+        "type": "infra.pulse_to_calendar",
+        "purpose": "Check whether Dan needs to worry about the three computers, Manhattan, and agent reachability."
+      },
+      {
+        "time": "03:30",
+        "type": "review.chair_history",
+        "purpose": "Read recent chair history, detect failed or unclear work, and schedule repair if needed."
+      },
+      {
+        "time": "04:00",
+        "type": "small_planned_execution",
+        "purpose": "Execute small previously scheduled work such as brief research, review, document preparation, or draft creation."
+      },
+      {
+        "time": "05:00",
+        "type": "report.status_digest",
+        "purpose": "Leave a morning digest with what happened, what is ready, what failed, and what needs Dan."
+      }
+    ],
+    "success_condition": "When Dan wakes naturally around 05:30-06:30, the calendar past already contains useful operational knowledge and the present shows only what deserves attention."
+  },
+  "infra_pulse": {
+    "id": "infra.pulse",
+    "type": "infra.pulse_to_calendar",
+    "core_questions": [
+      "Are the three computers on?",
+      "Is Manhattan running on the three computers?",
+      "Are the agents reachable?",
+      "Does recent history show stability or concern?",
+      "Does Dan need to worry?"
+    ],
+    "machines": [
+      {
+        "id": "work_8gb",
+        "name": "WORK 8GB"
+      },
+      {
+        "id": "lab_512",
+        "name": "LAB 512"
+      },
+      {
+        "id": "lab_256",
+        "name": "LAB 256"
+      }
+    ],
+    "per_machine_indices": [
+      "machine_power",
+      "manhattan",
+      "agent_reachable",
+      "last_seen"
+    ],
+    "aggregate_indices": [
+      "computers_online",
+      "manhattan_ok",
+      "agents_reachable",
+      "stability_wave",
+      "dan_attention"
+    ],
+    "calendar_title_examples": [
+      "[OK] Infra pulse — Dan attention: none",
+      "[WATCH] Infra pulse — LAB 512 agent unreachable",
+      "[SOON] Infra pulse — Manhattan down on WORK 8GB"
+    ],
+    "calendar_description_fields": [
+      "Status",
+      "Computers",
+      "Manhattan",
+      "Agents",
+      "Stability wave",
+      "Dan attention",
+      "Evidence",
+      "Next"
+    ]
+  },
+  "dan_attention": {
+    "id": "dan.attention",
+    "question": "Dan precisa se preocupar?",
+    "values": [
+      {
+        "id": "none",
+        "meaning": "Dan does not need to check terminals or intervene."
+      },
+      {
+        "id": "later",
+        "meaning": "Something is worth noticing, but not urgent."
+      },
+      {
+        "id": "soon",
+        "meaning": "A repair Expedition or decision should happen today."
+      },
+      {
+        "id": "now",
+        "meaning": "Human attention is needed now because something consequential or unstable is happening."
+      }
+    ],
+    "default_goal": "Maximize mornings where dan_attention is none, and make non-none cases explicit and actionable."
+  },
+  "stability_wave": {
+    "id": "infra.stability_wave",
+    "values": [
+      {
+        "id": "stable",
+        "meaning": "Recent pulses are OK with no repeated failures or flapping."
+      },
+      {
+        "id": "watch",
+        "meaning": "A single or mild issue appeared, but immediate action is not required."
+      },
+      {
+        "id": "unstable",
+        "meaning": "Repeated failures, disappearing machines, unreachable agents, or Manhattan problems suggest real concern."
+      },
+      {
+        "id": "unknown",
+        "meaning": "Not enough recent data exists to judge stability."
+      }
+    ]
+  },
+  "operational_rhythm": {
+    "id": "rhythm.quality_before_frenzy",
+    "principles": [
+      "more_review_and_planning_than_frenetic_execution_at_first",
+      "empty_slots_are_healthy",
+      "one_wake_per_hour_per_chair_is_the_initial_default",
+      "morning_work_should_prepare_the_day_not_overwhelm_it",
+      "each_expedition_should_reduce_manual_relay_work"
+    ],
+    "default_day_shape": [
+      {
+        "period": "early_morning",
+        "purpose": "infra pulse, chair review, small scheduled work, morning digest"
+      },
+      {
+        "period": "daytime",
+        "purpose": "Dan reads, decides, connects with people, and schedules future work through planning conversations"
+      },
+      {
+        "period": "evening",
+        "purpose": "review, handoff cleanup, future planning, next morning preparation"
+      }
+    ]
+  },
+  "closure_policy": {
+    "id": "closure.real_output_and_proof",
+    "principle": "An Expedition is not done when it thinks. It is done when it leaves a real object in the right place and writes proof or handoff.",
+    "valid_real_outputs": [
+      "calendar_event",
+      "drive_doc_or_bundle",
+      "github_pr",
+      "sheets_register_row",
+      "gmail_draft",
+      "sent_email_record",
+      "receipt",
+      "handoff"
+    ],
+    "anti_patterns": [
+      "chat_only_output",
+      "research_without_next_action",
+      "done_without_proof",
+      "dan_must_manually_finish",
+      "knowledge_orphaned_outside_destination"
+    ]
+  }
+}

@@ -1,0 +1,400 @@
+{
+"kind": "expedition.pack_spec",
+"id": "expedition.pack_spec.v0",
+"version": "0.1.0",
+"status": "draft",
+"canonicalization": "jcs-rfc8785",
+"ruleset": "expedition.rules.canon.v0",
+"catalog": "expedition.catalog.v0",
+"operating_model": "expedition.operating_model.v0",
+"law_boundary": {
+"this_document": "official_machine_readable_shape_for_execution_packs",
+"does_not_replace": [
+"expedition.rules.canon.v0",
+"expedition.catalog.v0",
+"expedition.operating_model.v0"
+],
+"pack_instances": "must_conform_to_this_shape",
+"markdown_docs": "derived_view",
+"calendar_descriptions": "derived_view",
+"agent_prompts": "derived_view"
+},
+"purpose": "Define the official machine-readable shape of Expedition Packs: the place where business logic, local thresholds, domain context, input requirements, output formats, recovery behavior, and scoped exceptions live.",
+"principle": {
+"canon": "general_rules",
+"catalog": "types_skills_destinations",
+"operating_model": "runtime_behavior",
+"wake_contract": "executor_boot_cycle",
+"pack_spec": "official_shape_for_business_logic",
+"pack_instance": "business_logic_for_a_family_of_executions",
+"event_or_run": "specific_application_and_proof"
+},
+"core_separation": {
+"canon_must_contain": [
+"general_rules",
+"forbidden_behavior",
+"evidence_requirements",
+"escape_hatch_policy",
+"retry_policy",
+"closure_policy",
+"status_vocabulary"
+],
+"pack_must_contain": [
+"domain_context",
+"local_business_logic",
+"thresholds",
+"decision_logic",
+"local_exceptions",
+"input_requirements",
+"output_format",
+"proof_requirements_for_this_work_family",
+"recovery_mapping"
+],
+"event_or_run_must_contain": [
+"pack_reference",
+"specific_inputs",
+"specific_outputs",
+"exceptions_used",
+"evidence_links",
+"final_status"
+]
+},
+"required_pack_fields": [
+"kind",
+"id",
+"version",
+"status",
+"type",
+"skill",
+"chair",
+"objective",
+"domain_context",
+"inputs",
+"business_logic",
+"decision_logic",
+"exceptions",
+"tools",
+"outputs",
+"proof",
+"recovery",
+"review"
+],
+"pack_shape": {
+"kind": "expedition.execution_pack",
+"id": "",
+"version": "",
+"status": "draft",
+"type": "",
+"skill": "",
+"chair": "",
+"objective": "",
+"domain_context": {},
+"inputs": {
+"required": [],
+"optional": [],
+"lookback": {},
+"missing_input_behavior": "blocked"
+},
+"business_logic": [],
+"decision_logic": {},
+"exceptions": [],
+"tools": {
+"preferred": [],
+"fallback": [],
+"forbidden": []
+},
+"outputs": {},
+"proof": {
+"required": [],
+"optional": []
+},
+"recovery": {
+"if_missing_inputs": "blocked",
+"if_tool_failure": "deferred_once",
+"if_unsafe_or_unclear_effect_state": "failed_final",
+"if_scope_wrong": "repair_needed"
+},
+"review": {
+"triggers": [],
+"cadence": "",
+"owner": ""
+}
+},
+"field_meanings": {
+"kind": "Must be expedition.execution_pack for concrete packs.",
+"id": "Stable pack identifier, usually pack.<domain>_<mission>.vN.",
+"version": "Pack version.",
+"status": "draft, active, deprecated, or archived.",
+"type": "Expedition type from expedition.catalog.v0.",
+"skill": "Expedition skill from expedition.catalog.v0.",
+"chair": "Default chair/calendar that normally executes this pack.",
+"objective": "Specific business objective for this pack family.",
+"domain_context": "Domain-specific facts the Agent needs to understand the work.",
+"inputs": "Required and optional inputs the Agent must read before execution.",
+"business_logic": "Local rules, thresholds, expectations, scoring, and interpretation.",
+"decision_logic": "How to convert inputs and business logic into decisions/statuses.",
+"exceptions": "Scoped local exceptions that do not become general canon.",
+"tools": "Preferred, fallback, and forbidden tools for this pack.",
+"outputs": "Exact output objects and formats expected from successful execution.",
+"proof": "Evidence required before marking the Expedition done.",
+"recovery": "How to map failure modes to blocked, deferred_once, failed_final, repair_needed, or review_needed.",
+"review": "When this pack itself should be reviewed or revised."
+},
+"business_logic_rule_shape": {
+"required_fields": [
+"id",
+"description",
+"applies_to",
+"condition",
+"effect",
+"evidence_required"
+],
+"field_meanings": {
+"id": "Stable business rule identifier scoped to this pack.",
+"description": "Human-readable explanation of the local logic.",
+"applies_to": "Inputs, machines, actors, outputs, statuses, or decisions affected by the rule.",
+"condition": "Machine-readable or constrained natural-language condition.",
+"effect": "Decision, status, output, score, or interpretation applied when the condition matches.",
+"evidence_required": "Evidence required to apply the rule."
+},
+"must_not": [
+"override_rules_canon",
+"silently_expand_authority",
+"change_catalog_destination_policy_without_pr",
+"hide_external_effects",
+"remove_proof_requirement"
+]
+},
+"decision_logic_shape": {
+"allowed_forms": [
+"enum_mapping",
+"threshold_table",
+"ordered_rules",
+"score_to_status",
+"if_then_decisions"
+],
+"required_properties": [
+"deterministic_enough_for_agent_use",
+"explicit_outputs",
+"clear_fallback_when_uncertain"
+],
+"uncertainty_policy": {
+"default": "unknown_or_blocked",
+"must_not": [
+"guess_stable_without_evidence",
+"mark_done_when_decision_inputs_are_missing",
+"convert_unknown_to_ok"
+]
+}
+},
+"exception_shape": {
+"required_fields": [
+"id",
+"applies_to",
+"condition",
+"effect",
+"reason",
+"expires",
+"evidence_required",
+"must_not"
+],
+"field_meanings": {
+"id": "Stable exception identifier scoped to this pack.",
+"applies_to": "Specific field, machine, actor, tool, output, status, or decision affected.",
+"condition": "Condition under which the exception may be used.",
+"effect": "How the exception changes local interpretation or output.",
+"reason": "Why this exception exists.",
+"expires": "When the exception stops being valid.",
+"evidence_required": "Proof required to activate the exception.",
+"must_not": "Hard limits this exception cannot override."
+},
+"principles": [
+"exception_is_not_rule",
+"exception_is_local_business_logic",
+"exception_requires_condition_and_evidence",
+"exception_usage_must_be_recorded_in_run_or_handoff",
+"frequent_exception_usage_should_trigger_pack_review"
+],
+"must_not": [
+"hide_machine_or_tool_failure_without_evidence",
+"override_external_effect_authority",
+"convert_missing_evidence_into_success",
+"change_canon_by_repetition",
+"become_permanent_without_review"
+]
+},
+"tool_shape": {
+"preferred": {
+"meaning": "Tools the Agent should try first.",
+"examples": [
+"expedition_mcp",
+"chair.read_now",
+"docs.write_handoff",
+"sheets.append_register_row",
+"expedition.mark_done"
+]
+},
+"fallback": {
+"meaning": "Tools allowed if preferred tools fail and the fallback preserves authority, output, and proof."
+},
+"forbidden": {
+"meaning": "Tools or behaviors explicitly not allowed for this pack."
+},
+"fallback_rule": "The tool is replaceable. The output, authority, proof, and handoff are not."
+},
+"output_shape": {
+"required_properties": [
+"declared_destination",
+"object_type",
+"minimum_fields",
+"link_back_to_calendar",
+"proof_reference"
+],
+"destination_examples": {
+"google_calendar": [
+"title_format",
+"description_fields",
+"extended_properties",
+"linked_outputs"
+],
+"google_drive": [
+"folder",
+"doc_title",
+"sections",
+"evidence_links"
+],
+"google_sheets": [
+"spreadsheet",
+"sheet_name",
+"row_shape"
+],
+"github_pr": [
+"repo",
+"branch_name_pattern",
+"pr_title_pattern",
+"required_checks_or_limitations"
+],
+"gmail_draft": [
+"recipient",
+"subject",
+"body_requirements",
+"send_policy"
+]
+}
+},
+"proof_shape": {
+"required_fields": [
+"evidence_required",
+"changed_resources",
+"tool_calls_or_actions",
+"final_status",
+"next_state"
+],
+"valid_evidence": [
+"calendar_event_id",
+"drive_file_id_or_url",
+"google_doc_id_or_url",
+"sheets_row_reference",
+"github_pr_url",
+"gmail_draft_id",
+"sent_email_record",
+"receipt_id_or_url",
+"handoff_id_or_url",
+"source_status_snapshot"
+],
+"done_policy": {
+"done_requires_real_output": true,
+"done_requires_proof": true,
+"chat_only_output_is_not_done": true
+}
+},
+"recovery_shape": {
+"allowed_states": [
+"blocked",
+"deferred_once",
+"failed_final",
+"repair_needed",
+"review_needed"
+],
+"default_mapping": {
+"missing_required_input": "blocked",
+"preferred_tool_failed_but_safe_fallback_exists": "continue_with_fallback",
+"preferred_tool_failed_and_no_safe_fallback": "deferred_once",
+"authority_missing": "blocked",
+"unsafe_or_unclear_external_effect_state": "failed_final",
+"scope_wrong": "repair_needed",
+"output_exists_but_needs_judgment": "review_needed"
+},
+"retry_policy": {
+"maximum_retries": 1,
+"after_retry_failure": "failed_final",
+"retry_must_carry_failure_context": true
+}
+},
+"pack_validation": {
+"must_match_catalog": [
+"type",
+"skill"
+],
+"must_not_conflict_with_rules_canon": true,
+"must_declare_inputs": true,
+"must_declare_outputs": true,
+"must_declare_proof": true,
+"must_declare_recovery": true,
+"exceptions_must_be_scoped": true,
+"exceptions_must_have_conditions": true,
+"exceptions_must_have_evidence": true,
+"business_logic_must_not_change_general_rules": true,
+"pack_id_must_be_referenced_by_event": true
+},
+"event_reference_shape": {
+"pack_reference_fields": [
+"pack_id",
+"pack_version",
+"pack_hash_optional"
+],
+"minimum_event_fields_when_pack_is_used": [
+"type",
+"skill",
+"pack_id",
+"objective",
+"destination",
+"authority",
+"done_criteria"
+]
+},
+"run_application_shape": {
+"kind": "expedition.run_application",
+"event_id": "",
+"pack_id": "",
+"pack_version": "",
+"inputs_read": [],
+"business_logic_applied": [],
+"exceptions_used": [],
+"outputs_written": [],
+"proof": [],
+"final_status": "",
+"next_state": ""
+},
+"run_exception_usage_shape": {
+"exception_used": {
+"id": "",
+"condition_matched": "",
+"reason": "",
+"evidence": [],
+"effect_applied": "",
+"must_not_checked": []
+}
+},
+"review_triggers": [
+"pack_used_successfully_multiple_times",
+"pack_exception_used_repeatedly",
+"pack_caused_agent_confusion",
+"pack_outputs_not_useful",
+"pack_thresholds_too_sensitive_or_too_weak",
+"pack_conflicts_with_catalog_or_rules_canon",
+"business_logic_is_repeated_across_many_packs",
+"exception_should_be_promoted_or_deleted"
+],
+"canonical_sentence": "Canon does not carry cases. Pack does not become law. Event applies the pack. Run writes the proof."
+}

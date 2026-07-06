@@ -1,0 +1,427 @@
+{
+  "kind": "expedition.catalog",
+  "id": "expedition.catalog.v0",
+  "version": "0.1.0",
+  "status": "draft",
+  "canonicalization": "jcs-rfc8785",
+  "ruleset": "expedition.rules.canon.v0",
+  "law_boundary": {
+    "this_document": "catalog_of_types_skills_destinations",
+    "does_not_replace": "expedition.rules.canon.v0",
+    "markdown_views": "derived_view",
+    "calendar_descriptions": "derived_view",
+    "skill_markdown": "procedure_view"
+  },
+  "purpose": "Define the reusable Expedition types, skills, outputs, and destination policy so planned work becomes placed, reviewable, executable reality.",
+  "global_objective": {
+    "id": "global.return_time_to_dan_and_team",
+    "text": "Expeditions exist to reduce Dan's operational burden, advance the team, and create more free time for real conversations, decisions, and human connections.",
+    "test": "A good Expedition leaves a real object, decision, draft, PR, schedule, receipt, or handoff that reduces manual relay work."
+  },
+  "destination_policy": {
+    "working_material": {
+      "destination": "google_drive",
+      "rule": "If the output is useful working material, put it in Drive."
+    },
+    "durable_law_code_canon": {
+      "destination": "github_pr",
+      "rule": "If the output changes durable law, code, canon, schemas, MCP behavior, or important institutional documents, put it in GitHub as a PR."
+    },
+    "time_bound_duty": {
+      "destination": "google_calendar",
+      "rule": "If the output is a time-bound duty, put it in Calendar."
+    },
+    "index_or_state": {
+      "destination": "google_sheets",
+      "rule": "If the output is index, state, register, or tabular status, put it in Sheets."
+    },
+    "communication_draft": {
+      "destination": "gmail_draft",
+      "rule": "If the output is a communication that Dan should review or send, prepare a Gmail draft."
+    },
+    "communication_send": {
+      "destination": "gmail_send",
+      "rule": "Sending communication touches the world and requires the appropriate authority and proof."
+    }
+  },
+  "type_families": [
+    {
+      "id": "plan",
+      "goal": "Turn intent into scheduled future Expeditions."
+    },
+    {
+      "id": "research",
+      "goal": "Produce knowledge only when it advances the team, unblocks decisions, or prepares execution."
+    },
+    {
+      "id": "make",
+      "goal": "Create a real object in the correct destination."
+    },
+    {
+      "id": "review",
+      "goal": "Judge code, documents, plans, or chair history against intent and standards."
+    },
+    {
+      "id": "infra",
+      "goal": "Reduce infrastructure uncertainty and answer whether Dan needs to worry."
+    },
+    {
+      "id": "communication",
+      "goal": "Prepare or send communication that moves real people or work forward."
+    },
+    {
+      "id": "canon",
+      "goal": "Propose or update durable rules, schemas, catalog entries, or institutional documents through PR authority."
+    }
+  ],
+  "expedition_types": [
+    {
+      "id": "plan.to_calendar",
+      "family": "plan",
+      "goal": "Turn a conversation, rough intent, or backlog into scheduled future Expeditions.",
+      "default_destination": "google_calendar",
+      "skill": "plan-expeditions",
+      "ordinary_authority": "calendar_mcp",
+      "output_objects": [
+        "calendar_events",
+        "event_descriptions",
+        "event_metadata",
+        "optional_drive_bundles"
+      ],
+      "done_when": [
+        "future_events_created_or_updated",
+        "each_event_has_chair_type_objective_and_closure_expectation",
+        "handoff_or_note_exists_when_context_is_nontrivial"
+      ]
+    },
+    {
+      "id": "research.to_drive",
+      "family": "research",
+      "goal": "Research something deeply or usefully and leave a durable research bundle in Google Drive.",
+      "default_destination": "google_drive",
+      "skill": "research-to-drive",
+      "ordinary_authority": "calendar_mcp",
+      "output_objects": [
+        "drive_bundle",
+        "research_doc",
+        "source_bundle",
+        "handoff",
+        "next_action_recommendation"
+      ],
+      "done_when": [
+        "research_doc_exists",
+        "sources_or_source_bundle_exists",
+        "team_value_is_explicit",
+        "next_action_or_decision_is_explicit",
+        "handoff_exists"
+      ]
+    },
+    {
+      "id": "make.code_as_pr",
+      "family": "make",
+      "goal": "Make code changes and open a GitHub PR.",
+      "default_destination": "github_pr",
+      "skill": "code-as-pr",
+      "ordinary_authority": "github_pr",
+      "output_objects": [
+        "branch",
+        "commit",
+        "pull_request",
+        "test_result",
+        "handoff"
+      ],
+      "done_when": [
+        "pull_request_exists",
+        "changed_files_are_described",
+        "test_or_build_result_is_recorded",
+        "handoff_exists",
+        "calendar_event_links_to_pr"
+      ]
+    },
+    {
+      "id": "make.document_to_drive",
+      "family": "make",
+      "goal": "Make a regular working document and save it to Google Drive.",
+      "default_destination": "google_drive",
+      "skill": "document-to-drive",
+      "ordinary_authority": "calendar_mcp",
+      "output_objects": [
+        "google_doc",
+        "drive_link",
+        "handoff"
+      ],
+      "done_when": [
+        "document_exists_in_correct_folder",
+        "document_is_readable_and_useful",
+        "calendar_event_links_to_document",
+        "handoff_exists_when_context_is_nontrivial"
+      ]
+    },
+    {
+      "id": "make.important_document_as_pr",
+      "family": "make",
+      "goal": "Make or change an important durable document through a GitHub PR.",
+      "default_destination": "github_pr",
+      "skill": "important-document-as-pr",
+      "ordinary_authority": "github_pr",
+      "output_objects": [
+        "markdown_or_json_file",
+        "branch",
+        "pull_request",
+        "handoff"
+      ],
+      "done_when": [
+        "pull_request_exists",
+        "diff_is_reviewable",
+        "reason_for_change_is_clear",
+        "calendar_event_links_to_pr",
+        "handoff_exists"
+      ]
+    },
+    {
+      "id": "review.code",
+      "family": "review",
+      "goal": "Review code, a PR, repository state, or implementation against intent and standards.",
+      "default_destination": "google_drive_or_github_pr_comment",
+      "skill": "review-code",
+      "ordinary_authority": "calendar_mcp",
+      "output_objects": [
+        "review_note",
+        "findings",
+        "severity",
+        "recommendation"
+      ],
+      "done_when": [
+        "review_output_exists",
+        "recommendation_is_explicit",
+        "blocking_issues_are_identified",
+        "next_action_is_clear"
+      ]
+    },
+    {
+      "id": "review.document",
+      "family": "review",
+      "goal": "Review a document for clarity, completeness, usefulness, and alignment with the relevant canon or intent.",
+      "default_destination": "google_drive_or_github_pr_comment",
+      "skill": "review-document",
+      "ordinary_authority": "calendar_mcp",
+      "output_objects": [
+        "review_note",
+        "findings",
+        "recommendation"
+      ],
+      "done_when": [
+        "review_output_exists",
+        "decision_or_recommendation_is_explicit",
+        "fixes_or_next_expeditions_are_suggested_when_needed"
+      ]
+    },
+    {
+      "id": "infra.pulse_to_calendar",
+      "family": "infra",
+      "goal": "Check the three-computer infrastructure pulse and answer whether Dan needs to worry.",
+      "default_destination": "google_calendar_and_google_sheets",
+      "skill": "infra-pulse",
+      "ordinary_authority": "calendar_mcp",
+      "output_objects": [
+        "brief_calendar_event_or_update",
+        "sheets_status_row",
+        "optional_drive_report_if_warn_or_fail"
+      ],
+      "done_when": [
+        "three_computers_status_is_recorded",
+        "manhattan_status_is_recorded",
+        "agent_reachability_is_recorded",
+        "stability_wave_is_recorded",
+        "dan_attention_is_recorded"
+      ]
+    },
+    {
+      "id": "communication.gmail_draft",
+      "family": "communication",
+      "goal": "Prepare a Gmail draft that Dan can review, edit, or send.",
+      "default_destination": "gmail_draft",
+      "skill": "gmail-draft",
+      "ordinary_authority": "calendar_mcp",
+      "output_objects": [
+        "gmail_draft",
+        "calendar_link_or_handoff"
+      ],
+      "done_when": [
+        "draft_exists",
+        "recipient_and_subject_are_clear",
+        "calendar_event_links_to_draft_or_handoff",
+        "no_send_action_was_taken"
+      ]
+    },
+    {
+      "id": "communication.gmail_send",
+      "family": "communication",
+      "goal": "Send an email only when the Expedition has the required authority.",
+      "default_destination": "gmail_send",
+      "skill": "gmail-send",
+      "ordinary_authority": "human_approval",
+      "output_objects": [
+        "sent_email_record",
+        "receipt",
+        "handoff"
+      ],
+      "done_when": [
+        "authority_is_recorded",
+        "email_was_sent_or_failure_was_recorded",
+        "receipt_exists",
+        "calendar_event_links_to_receipt"
+      ]
+    },
+    {
+      "id": "canon.change_as_pr",
+      "family": "canon",
+      "goal": "Propose a durable change to rules, catalog, schemas, MCP behavior, or institutional canon through GitHub PR.",
+      "default_destination": "github_pr",
+      "skill": "canon-change-as-pr",
+      "ordinary_authority": "github_pr",
+      "output_objects": [
+        "branch",
+        "pull_request",
+        "diff",
+        "reason",
+        "handoff"
+      ],
+      "done_when": [
+        "pull_request_exists",
+        "diff_is_reviewable",
+        "reason_for_change_is_clear",
+        "calendar_event_links_to_pr",
+        "no_canon_change_is_treated_as_final_until_merged"
+      ]
+    }
+  ],
+  "expedition_skills": [
+    {
+      "id": "plan-expeditions",
+      "description": "Convert intent into scheduled future calendar events with chairs, types, objectives, outputs, and closure criteria.",
+      "default_type": "plan.to_calendar"
+    },
+    {
+      "id": "research-to-drive",
+      "description": "Research a question only to the point that it advances the team, then write a Drive bundle with sources, conclusions, and next action.",
+      "default_type": "research.to_drive"
+    },
+    {
+      "id": "code-as-pr",
+      "description": "Make a scoped code change, run available checks, and open a GitHub PR with a clear handoff.",
+      "default_type": "make.code_as_pr"
+    },
+    {
+      "id": "document-to-drive",
+      "description": "Create a regular working document in Google Drive and link it back to the Expedition.",
+      "default_type": "make.document_to_drive"
+    },
+    {
+      "id": "important-document-as-pr",
+      "description": "Create or update a durable institutional document as a GitHub PR.",
+      "default_type": "make.important_document_as_pr"
+    },
+    {
+      "id": "review-code",
+      "description": "Review code or a PR and leave findings, severity, recommendation, and next action.",
+      "default_type": "review.code"
+    },
+    {
+      "id": "review-document",
+      "description": "Review a document and leave a clear recommendation or fix path.",
+      "default_type": "review.document"
+    },
+    {
+      "id": "infra-pulse",
+      "description": "Check whether the three computers are online, Manhattan is running, agents are reachable, and Dan needs to worry.",
+      "default_type": "infra.pulse_to_calendar"
+    },
+    {
+      "id": "gmail-draft",
+      "description": "Prepare a Gmail draft for Dan to review or send.",
+      "default_type": "communication.gmail_draft"
+    },
+    {
+      "id": "gmail-send",
+      "description": "Send an email only with required approval and receipt.",
+      "default_type": "communication.gmail_send"
+    },
+    {
+      "id": "canon-change-as-pr",
+      "description": "Propose changes to canon, rules, catalog, schemas, or MCP behavior through a GitHub PR.",
+      "default_type": "canon.change_as_pr"
+    }
+  ],
+  "default_outputs": {
+    "google_calendar": [
+      "event",
+      "status",
+      "links",
+      "brief_handoff_or_receipt_reference"
+    ],
+    "google_drive": [
+      "folder_or_doc",
+      "source_or_evidence_bundle",
+      "handoff"
+    ],
+    "github_pr": [
+      "branch",
+      "commit",
+      "pull_request",
+      "reviewable_diff",
+      "handoff"
+    ],
+    "google_sheets": [
+      "register_row",
+      "status_row",
+      "index_row"
+    ],
+    "gmail_draft": [
+      "draft",
+      "handoff"
+    ],
+    "gmail_send": [
+      "sent_record",
+      "receipt"
+    ]
+  },
+  "done_patterns": {
+    "general": [
+      "real_output_exists_in_declared_destination",
+      "calendar_event_links_to_output",
+      "handoff_or_receipt_exists",
+      "next_state_is_explicit"
+    ],
+    "research": [
+      "team_value_is_explicit",
+      "decision_or_next_action_is_explicit",
+      "knowledge_is_not_orphaned"
+    ],
+    "code": [
+      "pr_exists",
+      "checks_or_test_limitations_are_recorded",
+      "review_path_is_clear"
+    ],
+    "document": [
+      "document_exists",
+      "document_location_is_correct",
+      "reader_can_use_it_without_reconstructing_context"
+    ],
+    "infra": [
+      "dan_attention_is_answered",
+      "stability_wave_is_answered",
+      "repair_next_step_exists_if_needed"
+    ],
+    "communication": [
+      "draft_or_sent_record_exists",
+      "authority_matches_action",
+      "world_touch_is_recorded_if_sent"
+    ],
+    "canon": [
+      "pr_exists",
+      "diff_is_reviewable",
+      "merge_is_required_before_authoritative_change"
+    ]
+  }
+}
